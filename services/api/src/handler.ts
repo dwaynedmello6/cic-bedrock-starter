@@ -1,62 +1,102 @@
-import { BedrockRuntimeClient, ConverseCommand } from "@aws-sdk/client-bedrock-runtime";
+// services/api/src/handler.ts
 
-const REGION = process.env.BEDROCK_REGION || process.env.AWS_REGION || "us-west-2";
-const MODEL_ID = process.env.MODEL_ID || "us.amazon.nova-2-lite-v1:0";
+import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from "aws-lambda";
+import { invokeModel } from "./bedrock/bedrockClient";
+import { estimateTokens, logError, logRequest, logResponse } from "./observability/logger";
+import { applySecurity } from "./security/pipeline";
 
-const client = new BedrockRuntimeClient({ region: REGION });
+const MODEL_ID = process.env.MODEL_ID ?? "anthropic.claude-3-haiku-20240307-v1:0";
+const USE_GUARDRAILS = (process.env.USE_GUARDRAILS ?? "false").toLowerCase() === "true";
+const MAX_PROMPT_CHARS = Number(process.env.MAX_PROMPT_CHARS ?? "4000");
 
-export const handler = async (event: any) => {
+function json(statusCode: number, body: unknown): APIGatewayProxyResultV2 {
+  return {
+    statusCode,
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(body),
+  };
+}
+
+function mapValidationError(errMsg: string): APIGatewayProxyResultV2 | null {
+  if (errMsg === "PROMPT_EMPTY") return json(400, { error: "Prompt is required." });
+  if (errMsg === "PROMPT_TOO_LONG") return json(400, { error: `Prompt too long. Max ${MAX_PROMPT_CHARS} characters.` });
+  return null;
+}
+
+export async function handler(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
+  const requestId =
+    event.requestContext?.requestId ??
+    event.headers?.["x-amzn-requestid"] ??
+    "unknown";
+
+  const start = Date.now();
+
   try {
-    const body = event?.body ? JSON.parse(event.body) : {};
-    const prompt: string = body?.prompt ?? "Say hello.";
+    // ---- parse input ----
+    const rawBody = event.body ?? "";
+    let prompt = "";
 
-    console.log("AI_REQUEST", {
-        modelId: MODEL_ID,
-        promptLength: prompt.length
-      });
+    try {
+      const parsed = rawBody ? JSON.parse(rawBody) : {};
+      prompt = typeof parsed.prompt === "string" ? parsed.prompt : "";
+    } catch {
+      return json(400, { error: 'Body must be valid JSON: { "prompt": "..." }' });
+    }
 
-    const cmd = new ConverseCommand({
+    // ---- apply security pipeline ----
+    let sec;
+    try {
+      sec = applySecurity(prompt, { maxPromptChars: MAX_PROMPT_CHARS });
+    } catch (e: any) {
+      const mapped = mapValidationError(e?.message ?? "");
+      if (mapped) return mapped;
+      throw e;
+    }
+
+    // ---- safe request log ----
+    logRequest({
+      requestId,
       modelId: MODEL_ID,
-      messages: [
-        {
-          role: "user",
-          content: [{ text: prompt }],
-        },
-      ],
-      inferenceConfig: {
-        maxTokens: 128,
-        temperature: 0.7,
-      },
+      useGuardrails: USE_GUARDRAILS,
+      promptLength: sec.promptLength,
+      redactedPromptLength: sec.redactedPromptLength,
+      piiDetected: sec.piiDetected,
+      piiTypes: sec.piiTypes,
+      redactionCount: sec.redactionCount,
+      promptTokensEst: estimateTokens(sec.safePrompt),
     });
 
-    const start = Date.now();
-    const resp = await client.send(cmd);
+    // ---- invoke model ----
+    const { text, guardrailsMode } = await invokeModel({
+      prompt: sec.safePrompt,
+      modelId: MODEL_ID,
+      useGuardrails: USE_GUARDRAILS,
+    });
+
     const latencyMs = Date.now() - start;
 
-    const outputText =
-      resp?.output?.message?.content?.map((c: any) => c.text).filter(Boolean).join("") ?? "";
-    
-    console.log("AI_RESPONSE", {
+    // ---- safe response log ----
+    logResponse({
+      requestId,
+      modelId: MODEL_ID,
       latencyMs,
-      outputLength: outputText.length
+      outputLength: text.length,
+      outputTokensEst: estimateTokens(text),
+      guardrailsMode,
+      piiTypes: sec.piiTypes,
     });
 
-    return {
-      statusCode: 200,
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ modelId: MODEL_ID, latencyMs, outputText }),
-    };
+    return json(200, { output: text });
   } catch (err: any) {
-    console.error("BEDROCK_CONVERSE_FAILED", { name: err?.name, message: err?.message });
-    return {
-      statusCode: 500,
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        error: "BEDROCK_CONVERSE_FAILED",
-        name: err?.name,
-        message: err?.message,
-        modelId: MODEL_ID,
-      }),
-    };
+    const latencyMs = Date.now() - start;
+
+    logError({
+      requestId,
+      latencyMs,
+      name: err?.name ?? "Error",
+      message: err?.message ?? String(err),
+    });
+
+    return json(500, { error: "Internal server error" });
   }
-};
+}
