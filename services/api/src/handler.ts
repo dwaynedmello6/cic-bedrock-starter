@@ -5,9 +5,17 @@ import { invokeModel } from "./bedrock/bedrockClient";
 import { estimateTokens, logError, logRequest, logResponse } from "./observability/logger";
 import { applySecurity } from "./security/pipeline";
 
+// Phase 3 (RAG)
+import { LocalRetriever } from "./retrieval/localRetriever";
+import { buildRagPrompt } from "./prompts/ragPrompt";
+
 const MODEL_ID = process.env.MODEL_ID ?? "anthropic.claude-3-haiku-20240307-v1:0";
 const USE_GUARDRAILS = (process.env.USE_GUARDRAILS ?? "false").toLowerCase() === "true";
+const USE_RAG = (process.env.USE_RAG ?? "false").toLowerCase() === "true";
 const MAX_PROMPT_CHARS = Number(process.env.MAX_PROMPT_CHARS ?? "4000");
+
+// Retriever instance (local knowledge base)
+const retriever = new LocalRetriever();
 
 function json(statusCode: number, body: unknown): APIGatewayProxyResultV2 {
   return {
@@ -53,6 +61,16 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
       throw e;
     }
 
+    // ---- RAG (optional) ----
+    let usedContextIds: string[] = [];
+    let finalPrompt = sec.safePrompt;
+
+    if (USE_RAG) {
+      const chunks = await retriever.getContext(sec.safePrompt, 3);
+      usedContextIds = chunks.map((c) => c.id);
+      finalPrompt = buildRagPrompt(sec.safePrompt, chunks);
+    }
+
     // ---- safe request log ----
     logRequest({
       requestId,
@@ -63,12 +81,15 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
       piiDetected: sec.piiDetected,
       piiTypes: sec.piiTypes,
       redactionCount: sec.redactionCount,
-      promptTokensEst: estimateTokens(sec.safePrompt),
+      promptTokensEst: estimateTokens(finalPrompt),
+      // RAG metadata (safe)
+      useRag: USE_RAG,
+      usedContextIds,
     });
 
     // ---- invoke model ----
     const { text, guardrailsMode } = await invokeModel({
-      prompt: sec.safePrompt,
+      prompt: finalPrompt,
       modelId: MODEL_ID,
       useGuardrails: USE_GUARDRAILS,
     });
@@ -84,9 +105,12 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
       outputTokensEst: estimateTokens(text),
       guardrailsMode,
       piiTypes: sec.piiTypes,
+      // RAG metadata (safe)
+      useRag: USE_RAG,
+      usedContextIds,
     });
 
-    return json(200, { output: text });
+    return json(200, { output: text, used_context_ids: usedContextIds });
   } catch (err: any) {
     const latencyMs = Date.now() - start;
 

@@ -25,7 +25,8 @@ export class InfraStack extends Stack {
         BEDROCK_REGION: bedrockRegion,
         MODEL_ID: modelId,
         USE_GUARDRAILS: "true",
-        MAX_PROMPT_CHARS: "4000"
+        MAX_PROMPT_CHARS: "4000",
+        USE_RAG: "true"
       },
       logRetention: logs.RetentionDays.ONE_WEEK,
       bundling: {
