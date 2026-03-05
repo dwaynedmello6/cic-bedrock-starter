@@ -11,7 +11,7 @@ import { buildRagPrompt } from "./prompts/ragPrompt";
 
 const MODEL_ID = process.env.MODEL_ID ?? "anthropic.claude-3-haiku-20240307-v1:0";
 const USE_GUARDRAILS = (process.env.USE_GUARDRAILS ?? "false").toLowerCase() === "true";
-const USE_RAG = (process.env.USE_RAG ?? "false").toLowerCase() === "true";
+const USE_RAG_DEFAULT = (process.env.USE_RAG ?? "false").toLowerCase() === "true";
 const MAX_PROMPT_CHARS = Number(process.env.MAX_PROMPT_CHARS ?? "4000");
 
 // Retriever instance (local knowledge base)
@@ -31,6 +31,18 @@ function mapValidationError(errMsg: string): APIGatewayProxyResultV2 | null {
   return null;
 }
 
+function parseBool(v: unknown): boolean | undefined {
+  if (v === undefined || v === null) return undefined;
+  if (typeof v === "boolean") return v;
+  if (typeof v === "number") return v === 1;
+  if (typeof v === "string") {
+    const s = v.trim().toLowerCase();
+    if (s === "true" || s === "1" || s === "yes" || s === "y") return true;
+    if (s === "false" || s === "0" || s === "no" || s === "n") return false;
+  }
+  return undefined;
+}
+
 export async function handler(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
   const requestId =
     event.requestContext?.requestId ??
@@ -43,13 +55,18 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
     // ---- parse input ----
     const rawBody = event.body ?? "";
     let prompt = "";
+    let useRagFromBody: boolean | undefined = undefined;
 
     try {
       const parsed = rawBody ? JSON.parse(rawBody) : {};
       prompt = typeof parsed.prompt === "string" ? parsed.prompt : "";
+      useRagFromBody = parseBool((parsed as any).use_rag);
     } catch {
       return json(400, { error: 'Body must be valid JSON: { "prompt": "..." }' });
     }
+
+    // Decide RAG mode: request body overrides env default (if provided)
+    const ragEnabled = useRagFromBody ?? USE_RAG_DEFAULT;
 
     // ---- apply security pipeline ----
     let sec;
@@ -65,10 +82,27 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
     let usedContextIds: string[] = [];
     let finalPrompt = sec.safePrompt;
 
-    if (USE_RAG) {
+    // Debug: confirm what mode we picked (safe metadata only)
+    console.log("RAG_DECISION", {
+      requestId,
+      use_rag_raw: useRagFromBody,
+      use_rag_env_default: USE_RAG_DEFAULT,
+      ragEnabled,
+      promptLength: sec.promptLength,
+      redactedPromptLength: sec.redactedPromptLength,
+    });
+
+    if (ragEnabled) {
       const chunks = await retriever.getContext(sec.safePrompt, 3);
       usedContextIds = chunks.map((c) => c.id);
       finalPrompt = buildRagPrompt(sec.safePrompt, chunks);
+
+      // Debug: confirm retrieval returned ids (safe metadata only)
+      console.log("RETRIEVE_RESULT", {
+        requestId,
+        retrievedCount: chunks.length,
+        retrievedIds: usedContextIds,
+      });
     }
 
     // ---- safe request log ----
@@ -83,7 +117,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
       redactionCount: sec.redactionCount,
       promptTokensEst: estimateTokens(finalPrompt),
       // RAG metadata (safe)
-      useRag: USE_RAG,
+      useRag: ragEnabled,
       usedContextIds,
     });
 
@@ -106,7 +140,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
       guardrailsMode,
       piiTypes: sec.piiTypes,
       // RAG metadata (safe)
-      useRag: USE_RAG,
+      useRag: ragEnabled,
       usedContextIds,
     });
 

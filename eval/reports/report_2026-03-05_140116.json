@@ -1,0 +1,210 @@
+{
+  "meta": {
+    "endpoint": "https://ia1ju97n8d.execute-api.us-west-2.amazonaws.com/dev/invoke",
+    "ranAt": "2026-03-05T22:01:16.073Z",
+    "cases": 3
+  },
+  "summary": {
+    "totalRows": 6,
+    "ragOn": {
+      "count": 3,
+      "avgLatencyMs": 7413,
+      "retrievalAccuracy": 0,
+      "retrievalRecall": 0,
+      "retrievalPrecision": 1
+    },
+    "ragOff": {
+      "count": 3,
+      "avgLatencyMs": 7399,
+      "retrievalAccuracy": 0,
+      "retrievalRecall": 0,
+      "retrievalPrecision": 1
+    }
+  },
+  "rows": [
+    {
+      "questionId": "q1",
+      "ragEnabled": true,
+      "latencyMs": 7908,
+      "usedContextIds": [],
+      "expectedContextIds": [
+        "policy2",
+        "policy3"
+      ],
+      "retrievalCorrect": false,
+      "retrievalRecall": 0,
+      "retrievalPrecision": 1
+    },
+    {
+      "questionId": "q1",
+      "ragEnabled": false,
+      "latencyMs": 7767,
+      "usedContextIds": [],
+      "expectedContextIds": [
+        "policy2",
+        "policy3"
+      ],
+      "retrievalCorrect": false,
+      "retrievalRecall": 0,
+      "retrievalPrecision": 1
+    },
+    {
+      "questionId": "q2",
+      "ragEnabled": true,
+      "latencyMs": 7166,
+      "usedContextIds": [],
+      "expectedContextIds": [
+        "policy2",
+        "policy3"
+      ],
+      "retrievalCorrect": false,
+      "retrievalRecall": 0,
+      "retrievalPrecision": 1
+    },
+    {
+      "questionId": "q2",
+      "ragEnabled": false,
+      "latencyMs": 7474,
+      "usedContextIds": [],
+      "expectedContextIds": [
+        "policy2",
+        "policy3"
+      ],
+      "retrievalCorrect": false,
+      "retrievalRecall": 0,
+      "retrievalPrecision": 1
+    },
+    {
+      "questionId": "q3",
+      "ragEnabled": true,
+      "latencyMs": 7164,
+      "usedContextIds": [],
+      "expectedContextIds": [
+        "policy2"
+      ],
+      "retrievalCorrect": false,
+      "retrievalRecall": 0,
+      "retrievalPrecision": 1
+    },
+    {
+      "questionId": "q3",
+      "ragEnabled": false,
+      "latencyMs": 6955,
+      "usedContextIds": [],
+      "expectedContextIds": [
+        "policy2"
+      ],
+      "retrievalCorrect": false,
+      "retrievalRecall": 0,
+      "retrievalPrecision": 1
+    }
+  ],
+  "perQuestion": [
+    {
+      "questionId": "q1",
+      "ragEnabled": true,
+      "question": "What should we log for security reviews?",
+      "outputPreview": "### **What to Log for Security Reviews**\n\nLogging is a **critical component** of any security strategy. It provides visibility into system behavior, helps detect anomalies, supports forensic investigations, and ensures compliance. For **sec",
+      "measuredLatencyMs": 7908,
+      "expected_context_ids": [
+        "policy2",
+        "policy3"
+      ],
+      "used_context_ids": [],
+      "retrieval": {
+        "correct": false,
+        "recall": 0,
+        "precision": 1
+      },
+      "tokens": {}
+    },
+    {
+      "questionId": "q1",
+      "ragEnabled": false,
+      "question": "What should we log for security reviews?",
+      "outputPreview": "### **What to Log for Security Reviews**\n\nLogging is a **critical component** of any security program. It enables monitoring, forensic analysis, incident response, compliance, and continuous improvement. For **security reviews**, comprehens",
+      "measuredLatencyMs": 7767,
+      "expected_context_ids": [
+        "policy2",
+        "policy3"
+      ],
+      "used_context_ids": [],
+      "retrieval": {
+        "correct": false,
+        "recall": 0,
+        "precision": 1
+      },
+      "tokens": {}
+    },
+    {
+      "questionId": "q2",
+      "ragEnabled": true,
+      "question": "Should raw prompts with sensitive data be logged?",
+      "outputPreview": "### Should Raw Prompts with Sensitive Data Be Logged?\n\n**Short Answer:**  \n**No, raw prompts containing sensitive data should generally *not* be logged.** Doing so poses serious risks to data privacy, compliance, and security. However, ther",
+      "measuredLatencyMs": 7166,
+      "expected_context_ids": [
+        "policy2",
+        "policy3"
+      ],
+      "used_context_ids": [],
+      "retrieval": {
+        "correct": false,
+        "recall": 0,
+        "precision": 1
+      },
+      "tokens": {}
+    },
+    {
+      "questionId": "q2",
+      "ragEnabled": false,
+      "question": "Should raw prompts with sensitive data be logged?",
+      "outputPreview": "### Should Raw Prompts with Sensitive Data Be Logged?\n\n**Short Answer:**  \n**No, raw prompts containing sensitive data should generally *not* be logged.** Doing so poses serious risks to data privacy, compliance, and security. However, ther",
+      "measuredLatencyMs": 7474,
+      "expected_context_ids": [
+        "policy2",
+        "policy3"
+      ],
+      "used_context_ids": [],
+      "retrieval": {
+        "correct": false,
+        "recall": 0,
+        "precision": 1
+      },
+      "tokens": {}
+    },
+    {
+      "questionId": "q3",
+      "ragEnabled": true,
+      "question": "What kinds of data should we avoid logging if prompts might contain PII?",
+      "outputPreview": "### Types of Data to Avoid Logging When Prompts Might Contain PII\n\nWhen dealing with prompts that might contain **Personally Identifiable Information (PII)**, it is crucial to minimize logging any data that could inadvertently expose sensit",
+      "measuredLatencyMs": 7164,
+      "expected_context_ids": [
+        "policy2"
+      ],
+      "used_context_ids": [],
+      "retrieval": {
+        "correct": false,
+        "recall": 0,
+        "precision": 1
+      },
+      "tokens": {}
+    },
+    {
+      "questionId": "q3",
+      "ragEnabled": false,
+      "question": "What kinds of data should we avoid logging if prompts might contain PII?",
+      "outputPreview": "### **What Kinds of Data to Avoid Logging When Prompts Might Contain PII**\n\nWhen dealing with prompts that might contain **Personally Identifiable Information (PII)**, it's critical to avoid logging sensitive data to protect user privacy, c",
+      "measuredLatencyMs": 6955,
+      "expected_context_ids": [
+        "policy2"
+      ],
+      "used_context_ids": [],
+      "retrieval": {
+        "correct": false,
+        "recall": 0,
+        "precision": 1
+      },
+      "tokens": {}
+    }
+  ]
+}
