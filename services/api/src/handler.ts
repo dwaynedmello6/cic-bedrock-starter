@@ -177,7 +177,11 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
       promptVersion,
     });
 
-    return json(200, { output: text, used_context_ids: usedContextIds });
+    return json(200, {
+        output: text,
+        used_context_ids: usedContextIds,
+        requestId,
+      });
   } catch (err: any) {
     const latencyMs = Date.now() - start;
 

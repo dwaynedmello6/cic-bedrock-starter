@@ -1,13 +1,13 @@
-# Eval Summary — ab_prompt
+# Eval Summary — ab_model
 
-Compare Prompt v1 vs Prompt v2 (same model, RAG ON)
+Compare Model A vs Model B (RAG ON)
 
-Generated: 2026-03-06T01:30:12.847Z
+Generated: 2026-03-06T03:57:24.583Z
 
 | Run | n | avgLatencyMs | retrievalAcc | qualityPassRate |
 |---|---:|---:|---:|---:|
-| Prompt v1 | 3 | 1254 → | 1.00 → | 1.00 → |
-| Prompt v2 | 3 | 749 ↓ | 1.00 → | 1.00 → |
+| Model A | 3 | 860 → | 1.00 → | 1.00 → |
+| Model B | 3 | 867 ↑ | 1.00 → | 1.00 → |
 
 ## Notes
 - retrievalAcc is only computed for RAG runs

@@ -20,7 +20,7 @@ const DEFAULT_MODEL_A =
   process.env.MODEL_A_ID ?? "anthropic.claude-3-haiku-20240307-v1:0";
 
 const DEFAULT_MODEL_B =
-  process.env.MODEL_B_ID ?? "anthropic.claude-3-sonnet-20240229-v1:0";
+  process.env.MODEL_B_ID ?? "anthropic.claude-3-haiku-20240307-v1:0";
 
 export const EXPERIMENTS: Record<string, Experiment> = {
   // Existing: RAG ON/OFF

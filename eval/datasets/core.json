@@ -1,0 +1,23 @@
+[
+    {
+      "id": "q1",
+      "question": "What should we log for security reviews?",
+      "expected_context_ids": ["policy2", "policy3"],
+      "required_keywords": ["log", "metadata"],
+      "min_words": 20
+    },
+    {
+      "id": "q2",
+      "question": "Should we log raw prompts and retrieved documents?",
+      "expected_context_ids": ["policy2", "policy3"],
+      "required_keywords": ["never", "prompt"],
+      "min_words": 20
+    },
+    {
+      "id": "q3",
+      "question": "How should we handle PII before sending prompts to the model?",
+      "expected_context_ids": ["policy2","policy3"],
+      "required_keywords": ["redact", "pii"],
+      "min_words": 20
+    }
+  ]
