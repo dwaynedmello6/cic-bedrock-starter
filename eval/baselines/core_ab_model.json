@@ -1,0 +1,25 @@
+{
+  "dataset": "core",
+  "experimentId": "ab_model",
+  "savedAt": "2026-03-06T19:10:53.992Z",
+  "aggregates": [
+    {
+      "runId": "model_a",
+      "label": "Model A",
+      "useRag": true,
+      "avgLatencyMs": 2924.6666666666665,
+      "qualityPassRate": 0.6666666666666666,
+      "n": 3,
+      "retrievalAccuracy": 1
+    },
+    {
+      "runId": "model_b",
+      "label": "Model B",
+      "useRag": true,
+      "avgLatencyMs": 1846.6666666666667,
+      "qualityPassRate": 0.6666666666666666,
+      "n": 3,
+      "retrievalAccuracy": 1
+    }
+  ]
+}

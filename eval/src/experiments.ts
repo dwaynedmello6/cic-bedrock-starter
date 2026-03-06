@@ -17,10 +17,10 @@ export type Experiment = {
 };
 
 const DEFAULT_MODEL_A =
-  process.env.MODEL_A_ID ?? "anthropic.claude-3-haiku-20240307-v1:0";
+  process.env.MODEL_A_ID ?? "us.anthropic.claude-sonnet-4-20250514-v1:0";
 
 const DEFAULT_MODEL_B =
-  process.env.MODEL_B_ID ?? "anthropic.claude-3-haiku-20240307-v1:0";
+  process.env.MODEL_B_ID ?? "us.anthropic.claude-3-5-haiku-20241022-v1:0";
 
 export const EXPERIMENTS: Record<string, Experiment> = {
   // Existing: RAG ON/OFF

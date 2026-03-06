@@ -1,0 +1,25 @@
+{
+  "dataset": "core",
+  "experimentId": "ab_prompt",
+  "savedAt": "2026-03-06T20:30:12.500Z",
+  "aggregates": [
+    {
+      "runId": "prompt_v1",
+      "label": "Prompt v1",
+      "useRag": true,
+      "avgLatencyMs": 2482,
+      "qualityPassRate": 0.6666666666666666,
+      "n": 3,
+      "retrievalAccuracy": 1
+    },
+    {
+      "runId": "prompt_v2",
+      "label": "Prompt v2",
+      "useRag": true,
+      "avgLatencyMs": 2139,
+      "qualityPassRate": 0.6666666666666666,
+      "n": 3,
+      "retrievalAccuracy": 1
+    }
+  ]
+}

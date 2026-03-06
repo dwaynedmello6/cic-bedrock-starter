@@ -93,6 +93,41 @@ async function invokeOnce(payload: InvokePayload): Promise<{ result: InvokeResul
   return { result, latencyMs };
 }
 
+async function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function invokeWithRetry(
+  payload: InvokePayload,
+  retries = 3,
+  baseDelayMs = 1000
+): Promise<{ result: InvokeResult; latencyMs: number }> {
+  let lastError: unknown;
+
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await invokeOnce(payload);
+    } catch (err: any) {
+      lastError = err;
+
+      const msg = String(err?.message ?? err);
+      const retryable =
+        msg.includes("AccessDeniedException") ||
+        msg.includes("aws-marketplace:Subscribe") ||
+        msg.includes("aws-marketplace:ViewSubscriptions") ||
+        msg.includes("Internal server error");
+
+      if (!retryable || i === retries - 1) {
+        throw err;
+      }
+
+      await sleep(baseDelayMs * (i + 1));
+    }
+  }
+
+  throw lastError;
+}
+
 type ExtendedEvalRow = EvalRow & {
   experimentId: string;
   runId: string;
@@ -165,7 +200,7 @@ async function run() {
         payload.prompt_version = runCfg.promptVersion;
       }
 
-      const { result, latencyMs } = await invokeOnce(payload);
+      const { result, latencyMs } = await invokeWithRetry(payload);
 
       const expected = c.expected_context_ids ?? [];
       const actual = result.used_context_ids ?? [];

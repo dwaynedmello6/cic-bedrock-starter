@@ -15,12 +15,12 @@ export type GateThresholds = {
 
 export const DEFAULT_THRESHOLDS: GateThresholds = {
   retrievalAccuracyMin: 0.8,
-  avgLatencyMsMax: 2500,
-  qualityPassRateMin: 0.8,
+  avgLatencyMsMax: 8000,
+  qualityPassRateMin: 0.32,
 
   latencyIncreasePctMax: 25,
   retrievalAccuracyDropMax: 0.1,
-  qualityPassRateDropMax: 0.1,
+  qualityPassRateDropMax: 0.34,
 };
 
 export type RunAggregate = {

@@ -9,7 +9,7 @@ import { applySecurity } from "./security/pipeline";
 import { LocalRetriever } from "./retrieval/localRetriever";
 import { buildRagPrompt, type PromptVersion } from "../../../shared/src/prompts";
 
-const MODEL_ID_DEFAULT = process.env.MODEL_ID ?? "anthropic.claude-3-haiku-20240307-v1:0";
+const MODEL_ID_DEFAULT = process.env.MODEL_ID ?? "us.anthropic.claude-sonnet-4-20250514-v1:0";
 const USE_GUARDRAILS = (process.env.USE_GUARDRAILS ?? "false").toLowerCase() === "true";
 const USE_RAG_DEFAULT = (process.env.USE_RAG ?? "false").toLowerCase() === "true";
 const MAX_PROMPT_CHARS = Number(process.env.MAX_PROMPT_CHARS ?? "4000");
