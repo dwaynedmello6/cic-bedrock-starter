@@ -1,6 +1,6 @@
 # Bedrock RAG Evaluation & Experimentation Platform
 
-A production-style evaluation and experimentation framework for **RAG (Retrieval Augmented Generation) AI systems** built on **AWS Bedrock**.
+A production-style **evaluation and experimentation platform for Retrieval Augmented Generation (RAG) AI systems** built on **AWS Bedrock**.
 
 This project demonstrates how teams can systematically evaluate improvements to AI assistants by testing:
 
@@ -14,43 +14,61 @@ This project demonstrates how teams can systematically evaluate improvements to 
 
 The system includes a full **cloud inference pipeline**, **evaluation harness**, and **CI-style regression gates**, similar to internal tooling used by platform teams working with LLM systems.
 
+Infrastructure is deployed using **AWS CDK**, allowing the entire Bedrock inference service to be provisioned with a single command.
+
 ---
 
-# Architecture
+# System Architecture
 
 ```
-Client / Eval Harness
-│
-│ HTTP Request
-▼
-API Gateway
-│
-▼
-AWS Lambda
-│
-├── Security Pipeline
-│   ├── Input validation
-│   ├── PII detection
-│   └── Redaction
-│
-├── Retrieval Layer (RAG)
-│   └── Local policy knowledge base
-│
-├── Prompt Builder
-│   ├── Prompt v1
-│   └── Prompt v2
-│
-└── Bedrock Model Invocation
-│
-▼
-Amazon Bedrock Model
-│
-▼
-Response + Metadata
-(requestId, retrieval info, metrics)
+                     +----------------------+
+                     |   Evaluation Harness |
+                     |  (Experiment Runner) |
+                     +----------+-----------+
+                                |
+                                | HTTP
+                                ▼
+                    +-----------------------+
+                    |     API Gateway       |
+                    +-----------+-----------+
+                                |
+                                ▼
+                     +--------------------+
+                     |      AWS Lambda     |
+                     |   AI Inference API  |
+                     +----------+----------+
+                                |
+         +----------------------+----------------------+
+         |                                             |
+         ▼                                             ▼
+
++--------------------+                      +-----------------------+
+|  Security Pipeline |                      |   Retrieval (RAG)     |
+|--------------------|                      |-----------------------|
+| Input validation   |                      | Knowledge base search |
+| PII detection      |                      | Top-K context fetch   |
+| Redaction          |                      | Context formatting    |
++--------------------+                      +-----------+-----------+
+                                                        |
+                                                        ▼
+                                            +--------------------+
+                                            |   Prompt Builder   |
+                                            |--------------------|
+                                            | Prompt Version v1  |
+                                            | Prompt Version v2  |
+                                            +-----------+--------+
+                                                        |
+                                                        ▼
+                                            +--------------------+
+                                            | Amazon Bedrock LLM |
+                                            +-----------+--------+
+                                                        |
+                                                        ▼
+                                         Response + Metadata
+                                  (requestId, latency, contextIds)
 ```
 
-The **evaluation harness** runs controlled experiments against the API and generates performance reports.
+The **evaluation harness** runs controlled experiments against this API and generates performance reports.
 
 ---
 
@@ -119,17 +137,17 @@ matrix_small
 
 ---
 
-## Evaluation Metrics
+# Evaluation Metrics
 
-Each run records:
+Each run records multiple types of metrics.
 
-### Retrieval Metrics
+## Retrieval Metrics
 
 - retrieval accuracy
 - **Recall@K**
 - **MRR (Mean Reciprocal Rank)**
 
-### Response Quality Checks
+## Response Quality Checks
 
 Deterministic quality checks verify:
 
@@ -139,7 +157,7 @@ Deterministic quality checks verify:
 - refusal detection
 - hallucination signals
 
-### Performance Metrics
+## Performance Metrics
 
 - latency
 - token usage (optional)
@@ -147,7 +165,7 @@ Deterministic quality checks verify:
 
 ---
 
-## Regression Detection
+# Regression Detection
 
 The system supports **baseline comparisons**.
 
@@ -173,7 +191,7 @@ This enables **CI-style regression protection for AI systems**.
 
 ---
 
-## Experiment Reports
+# Experiment Reports
 
 Each run generates structured reports:
 
@@ -195,6 +213,37 @@ Reports also include:
 - retrieval failures
 - quality failures
 - requestIds for tracing logs
+
+---
+
+# Infrastructure (AWS CDK)
+
+The cloud infrastructure is deployed using **AWS CDK**.
+
+This automatically provisions:
+
+- API Gateway endpoint
+- Lambda inference service
+- Bedrock invocation permissions
+- API keys for secure access
+
+### Deploy infrastructure
+
+```bash
+cd infra
+npm install
+npx cdk deploy
+```
+
+Deployment outputs include:
+
+```
+API endpoint
+API key
+Invoke URL
+```
+
+The evaluation harness uses these outputs to run experiments against the deployed API.
 
 ---
 
@@ -268,6 +317,13 @@ Measures:
 # Project Structure
 
 ```
+infra/
+  cdk/
+    lib/
+      infra-stack.ts
+    bin/
+      deploy.ts
+
 services/
   api/
     src/
@@ -279,6 +335,8 @@ services/
 shared/
   src/
     prompts/
+      ragPrompt.v1.ts
+      ragPrompt.v2.ts
 
 eval/
   src/
@@ -328,6 +386,7 @@ This project demonstrates **how teams can safely iterate on AI systems using str
 - AWS Bedrock
 - AWS Lambda
 - API Gateway
+- AWS CDK
 - TypeScript
 - Node.js
 - Retrieval Augmented Generation (RAG)
