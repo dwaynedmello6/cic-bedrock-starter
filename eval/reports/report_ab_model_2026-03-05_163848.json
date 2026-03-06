@@ -1,0 +1,380 @@
+{
+  "meta": {
+    "endpoint": "https://ia1ju97n8d.execute-api.us-west-2.amazonaws.com/dev/invoke",
+    "ranAt": "2026-03-06T00:38:48.569Z",
+    "experimentId": "ab_model",
+    "experimentDescription": "Compare Model A vs Model B (RAG ON, prompt v1 default)",
+    "runs": [
+      {
+        "id": "model_a",
+        "label": "Model A",
+        "useRag": true,
+        "modelId": "anthropic.claude-3-haiku-20240307-v1:0"
+      },
+      {
+        "id": "model_b",
+        "label": "Model B",
+        "useRag": true,
+        "modelId": "anthropic.claude-3-sonnet-20240229-v1:0"
+      }
+    ],
+    "cases": 3
+  },
+  "summary": {
+    "totalRows": 6,
+    "ragOn": {
+      "count": 6,
+      "avgLatencyMs": 943,
+      "retrievalAccuracy": 1,
+      "retrievalRecall": 1,
+      "retrievalPrecision": 0.778
+    },
+    "ragOff": {
+      "count": 0,
+      "avgLatencyMs": 0,
+      "retrievalAccuracy": 0,
+      "retrievalRecall": 0,
+      "retrievalPrecision": 0
+    }
+  },
+  "aggregates": [
+    {
+      "runId": "model_a",
+      "label": "Model A",
+      "useRag": true,
+      "avgLatencyMs": 1069,
+      "qualityPassRate": 0.6666666666666666,
+      "n": 3,
+      "retrievalAccuracy": 1
+    },
+    {
+      "runId": "model_b",
+      "label": "Model B",
+      "useRag": true,
+      "avgLatencyMs": 817.6666666666666,
+      "qualityPassRate": 1,
+      "n": 3,
+      "retrievalAccuracy": 1
+    }
+  ],
+  "rows": [
+    {
+      "questionId": "q1",
+      "ragEnabled": true,
+      "latencyMs": 1480,
+      "usedContextIds": [
+        "policy2",
+        "policy3"
+      ],
+      "expectedContextIds": [
+        "policy2",
+        "policy3"
+      ],
+      "retrievalCorrect": true,
+      "retrievalRecall": 1,
+      "retrievalPrecision": 1,
+      "experimentId": "ab_model",
+      "runId": "model_a",
+      "runLabel": "Model A",
+      "qualityPass": true,
+      "qualityReasons": [],
+      "modelId": "anthropic.claude-3-haiku-20240307-v1:0"
+    },
+    {
+      "questionId": "q2",
+      "ragEnabled": true,
+      "latencyMs": 807,
+      "usedContextIds": [
+        "policy2",
+        "policy3"
+      ],
+      "expectedContextIds": [
+        "policy2",
+        "policy3"
+      ],
+      "retrievalCorrect": true,
+      "retrievalRecall": 1,
+      "retrievalPrecision": 1,
+      "experimentId": "ab_model",
+      "runId": "model_a",
+      "runLabel": "Model A",
+      "qualityPass": false,
+      "qualityReasons": [
+        "missing_keyword:never"
+      ],
+      "modelId": "anthropic.claude-3-haiku-20240307-v1:0"
+    },
+    {
+      "questionId": "q3",
+      "ragEnabled": true,
+      "latencyMs": 920,
+      "usedContextIds": [
+        "policy2",
+        "policy1",
+        "policy3"
+      ],
+      "expectedContextIds": [
+        "policy2"
+      ],
+      "retrievalCorrect": true,
+      "retrievalRecall": 1,
+      "retrievalPrecision": 0.3333333333333333,
+      "experimentId": "ab_model",
+      "runId": "model_a",
+      "runLabel": "Model A",
+      "qualityPass": true,
+      "qualityReasons": [],
+      "modelId": "anthropic.claude-3-haiku-20240307-v1:0"
+    },
+    {
+      "questionId": "q1",
+      "ragEnabled": true,
+      "latencyMs": 715,
+      "usedContextIds": [
+        "policy2",
+        "policy3"
+      ],
+      "expectedContextIds": [
+        "policy2",
+        "policy3"
+      ],
+      "retrievalCorrect": true,
+      "retrievalRecall": 1,
+      "retrievalPrecision": 1,
+      "experimentId": "ab_model",
+      "runId": "model_b",
+      "runLabel": "Model B",
+      "qualityPass": true,
+      "qualityReasons": [],
+      "modelId": "anthropic.claude-3-sonnet-20240229-v1:0"
+    },
+    {
+      "questionId": "q2",
+      "ragEnabled": true,
+      "latencyMs": 819,
+      "usedContextIds": [
+        "policy2",
+        "policy3"
+      ],
+      "expectedContextIds": [
+        "policy2",
+        "policy3"
+      ],
+      "retrievalCorrect": true,
+      "retrievalRecall": 1,
+      "retrievalPrecision": 1,
+      "experimentId": "ab_model",
+      "runId": "model_b",
+      "runLabel": "Model B",
+      "qualityPass": true,
+      "qualityReasons": [],
+      "modelId": "anthropic.claude-3-sonnet-20240229-v1:0"
+    },
+    {
+      "questionId": "q3",
+      "ragEnabled": true,
+      "latencyMs": 919,
+      "usedContextIds": [
+        "policy2",
+        "policy1",
+        "policy3"
+      ],
+      "expectedContextIds": [
+        "policy2"
+      ],
+      "retrievalCorrect": true,
+      "retrievalRecall": 1,
+      "retrievalPrecision": 0.3333333333333333,
+      "experimentId": "ab_model",
+      "runId": "model_b",
+      "runLabel": "Model B",
+      "qualityPass": true,
+      "qualityReasons": [],
+      "modelId": "anthropic.claude-3-sonnet-20240229-v1:0"
+    }
+  ],
+  "perQuestion": [
+    {
+      "experimentId": "ab_model",
+      "runId": "model_a",
+      "runLabel": "Model A",
+      "questionId": "q1",
+      "ragEnabled": true,
+      "model_id": "anthropic.claude-3-haiku-20240307-v1:0",
+      "prompt_version": null,
+      "question": "What should we log for security reviews?",
+      "outputPreview": "For security reviews, you should log metadata only, such as request id, latency, and model id. It is important to never log raw prompts that may contain sensitive data.",
+      "measuredLatencyMs": 1480,
+      "expected_context_ids": [
+        "policy2",
+        "policy3"
+      ],
+      "used_context_ids": [
+        "policy2",
+        "policy3"
+      ],
+      "retrieval": {
+        "correct": true,
+        "recall": 1,
+        "precision": 1
+      },
+      "quality": {
+        "pass": true,
+        "reasons": []
+      },
+      "tokens": {}
+    },
+    {
+      "experimentId": "ab_model",
+      "runId": "model_a",
+      "runLabel": "Model A",
+      "questionId": "q2",
+      "ragEnabled": true,
+      "model_id": "anthropic.claude-3-haiku-20240307-v1:0",
+      "prompt_version": null,
+      "question": "Should raw prompts with sensitive data be logged?",
+      "outputPreview": "According to policy2, raw prompts containing sensitive data should **not** be logged. Only metadata such as request ID, latency, and model ID should be logged for security reviews. \n\n**Answer:** No, raw prompts with sensitive data should no",
+      "measuredLatencyMs": 807,
+      "expected_context_ids": [
+        "policy2",
+        "policy3"
+      ],
+      "used_context_ids": [
+        "policy2",
+        "policy3"
+      ],
+      "retrieval": {
+        "correct": true,
+        "recall": 1,
+        "precision": 1
+      },
+      "quality": {
+        "pass": false,
+        "reasons": [
+          "missing_keyword:never"
+        ]
+      },
+      "tokens": {}
+    },
+    {
+      "experimentId": "ab_model",
+      "runId": "model_a",
+      "runLabel": "Model A",
+      "questionId": "q3",
+      "ragEnabled": true,
+      "model_id": "anthropic.claude-3-haiku-20240307-v1:0",
+      "prompt_version": null,
+      "question": "What kinds of data should we avoid logging if prompts might contain PII?",
+      "outputPreview": "Based on the provided context, you should avoid logging raw prompts that might contain PII (Personally Identifiable Information). \n\nAccording to **[policy2]**, for security reviews, you should only log metadata such as request ID, latency, ",
+      "measuredLatencyMs": 920,
+      "expected_context_ids": [
+        "policy2"
+      ],
+      "used_context_ids": [
+        "policy2",
+        "policy1",
+        "policy3"
+      ],
+      "retrieval": {
+        "correct": true,
+        "recall": 1,
+        "precision": 0.3333333333333333
+      },
+      "quality": {
+        "pass": true,
+        "reasons": []
+      },
+      "tokens": {}
+    },
+    {
+      "experimentId": "ab_model",
+      "runId": "model_b",
+      "runLabel": "Model B",
+      "questionId": "q1",
+      "ragEnabled": true,
+      "model_id": "anthropic.claude-3-sonnet-20240229-v1:0",
+      "prompt_version": null,
+      "question": "What should we log for security reviews?",
+      "outputPreview": "For security reviews, you should log metadata only, such as request id, latency, and model id. You should never log raw prompts containing sensitive data.\n\nThis approach ensures compliance with security best practices by protecting sensitiv",
+      "measuredLatencyMs": 715,
+      "expected_context_ids": [
+        "policy2",
+        "policy3"
+      ],
+      "used_context_ids": [
+        "policy2",
+        "policy3"
+      ],
+      "retrieval": {
+        "correct": true,
+        "recall": 1,
+        "precision": 1
+      },
+      "quality": {
+        "pass": true,
+        "reasons": []
+      },
+      "tokens": {}
+    },
+    {
+      "experimentId": "ab_model",
+      "runId": "model_b",
+      "runLabel": "Model B",
+      "questionId": "q2",
+      "ragEnabled": true,
+      "model_id": "anthropic.claude-3-sonnet-20240229-v1:0",
+      "prompt_version": null,
+      "question": "Should raw prompts with sensitive data be logged?",
+      "outputPreview": "According to policy2, raw prompts containing sensitive data should **never** be logged. Only metadata such as request ID, latency, and model ID should be logged for security reviews.\n\n**Answer:** No, raw prompts with sensitive data should n",
+      "measuredLatencyMs": 819,
+      "expected_context_ids": [
+        "policy2",
+        "policy3"
+      ],
+      "used_context_ids": [
+        "policy2",
+        "policy3"
+      ],
+      "retrieval": {
+        "correct": true,
+        "recall": 1,
+        "precision": 1
+      },
+      "quality": {
+        "pass": true,
+        "reasons": []
+      },
+      "tokens": {}
+    },
+    {
+      "experimentId": "ab_model",
+      "runId": "model_b",
+      "runLabel": "Model B",
+      "questionId": "q3",
+      "ragEnabled": true,
+      "model_id": "anthropic.claude-3-sonnet-20240229-v1:0",
+      "prompt_version": null,
+      "question": "What kinds of data should we avoid logging if prompts might contain PII?",
+      "outputPreview": "Based on the provided context, you should avoid logging raw prompts that might contain Personally Identifiable Information (PII). Specifically, **[policy2]** states: *\"For security reviews: log metadata only such as request id, latency, and",
+      "measuredLatencyMs": 919,
+      "expected_context_ids": [
+        "policy2"
+      ],
+      "used_context_ids": [
+        "policy2",
+        "policy1",
+        "policy3"
+      ],
+      "retrieval": {
+        "correct": true,
+        "recall": 1,
+        "precision": 0.3333333333333333
+      },
+      "quality": {
+        "pass": true,
+        "reasons": []
+      },
+      "tokens": {}
+    }
+  ]
+}
