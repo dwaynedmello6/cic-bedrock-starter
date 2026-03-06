@@ -1,0 +1,43 @@
+name: Eval Regression Gate
+
+on:
+  pull_request:
+    branches: [ "**" ]
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install deps (root)
+        run: npm ci
+
+      - name: Install deps (eval)
+        working-directory: eval
+        run: npm ci
+
+      - name: Run eval
+        working-directory: eval
+        env:
+          EVAL_API_URL: ${{ secrets.EVAL_API_URL }}
+          EVAL_API_KEY: ${{ secrets.EVAL_API_KEY }}
+          # optional knobs for experiments.ts
+          MODEL_A_ID: ${{ secrets.MODEL_A_ID }}
+          MODEL_B_ID: ${{ secrets.MODEL_B_ID }}
+        run: npm run eval -- --experiment matrix_small
+
+      - name: Upload report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-report
+          path: eval/reports/latest_summary.md
